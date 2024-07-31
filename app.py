@@ -65,7 +65,7 @@ def generate_image(api_key, style, content):
         client = OpenAI(api_key=api_key)
         prompt = f"{style} illustration of {content}"
         response = client.images.generate(
-            model="dall-e-2",
+            model="dall-e-3",
             prompt=prompt,
             size="1024x1024",
             n=1
