@@ -17,7 +17,7 @@ api_key = st.text_input("Enter your OpenAI API Key", type="password")
 points = ["tips", "hacks", "news", "guide", "analogy", "joke", "compare", "up and downs", "funfacts"]
 time_related = ["latest", "historic", "trends"]
 locations = ["culture", "country", "region", "religions", "beliefs"]
-hooks = [ ... ]  # Assuming your hooks list is already defined here.
+hooks = [ ... ]  # Continue with your defined hooks list.
 
 # Function to generate posts using OpenAI
 def generate_posts(api_key, platform, topic, style, num_posts, user_type):
@@ -59,7 +59,28 @@ if st.button('Generate Posts'):
 # Display and edit the DataFrame containing generated posts
 st.dataframe(st.session_state.posts_data, use_container_width=True)
 
-# Image generation and ZIP file creation (assuming these functions are defined and implemented correctly)
+# Function to generate an image based on selected row
+def generate_image(api_key, style, content):
+    try:
+        client = OpenAI(api_key=api_key)
+        prompt = f"{style} illustration of {content}"
+        response = client.images.generate(
+            model="dall-e-2",
+            prompt=prompt,
+            size="1024x1024",
+            n=1
+        )
+        if response.data:
+            image_url = response.data[0].url
+            return image_url
+        else:
+            st.error("No image was returned by the API.")
+            return None
+    except Exception as e:
+        st.error(f"Failed to generate image: {e}")
+        return None
+
+# Allow user to select a row for image generation
 selected_row = st.selectbox('Select a row to generate an image', range(len(st.session_state.posts_data)))
 selected_style = st.text_input('Enter Image Style for Selected Row')
 
@@ -71,3 +92,4 @@ if st.button('Generate Image for Selected Row'):
         zip_path = create_zip(selected_content, image_url)
         with open(zip_path, "rb") as file:
             st.download_button('Download Content and Image in Zip', file, file_name='final_posts.zip')
+
